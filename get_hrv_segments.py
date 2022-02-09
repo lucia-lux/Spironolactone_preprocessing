@@ -65,4 +65,4 @@ for pnum in qualtrics_df.Participant_number:
             missing_pnums.append([pnum,interval_name])
             continue
         # save to file
-        interval_df.to_csv(os.path.join(output_dir, "_".join([start_interval.split("_")[0],str(pnum),"hrv.csv"])))
+        interval_df.to_csv(os.path.join(output_dir, "_".join([start_interval.split("_")[0],str(pnum),"hrv.csv"])),index = False)
