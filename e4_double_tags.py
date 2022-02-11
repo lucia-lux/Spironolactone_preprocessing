@@ -67,5 +67,5 @@ keywords = ["tag","e4"]
 flagged_participants = e4.find_e4_notes(qualtrics_df,"session_notes","pnum",keywords)
 
 manual_check_pnums = e4.check_pnums(flagged_participants,missing_tags,below_min,duplicates)
-print("\nThe following participants had double tags detected around the start of the music section:\n")
-print(f"The following participants are worth checking manually:\n{manual_check_pnums}")
+print(f"\nThe following participants had fewer or more than the expected number of double tags:\n{[num for num in detect_missing_doubles_df.pnum]}\n")
+print(f"\nThe following participants are worth checking manually:\n{manual_check_pnums}")
