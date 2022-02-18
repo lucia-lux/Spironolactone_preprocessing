@@ -1,0 +1,9 @@
+If updating modules, do the following in the shell:
+
+# invoke __init__ for module
+import module_name
+import sys
+# delete
+delete(sys.modules["module_name"])
+# reload so changes take effect
+import module_name

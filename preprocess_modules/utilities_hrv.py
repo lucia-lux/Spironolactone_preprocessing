@@ -187,7 +187,7 @@ def select_hrv_record(pnum,hrv_files):
         warnings.warn(f"Found more than one file for participant {pnum}.\nManual check advised.")
     return recs.pop()
 
-def get_time_stamp(in_df,interval_col,pnum):
+def get_time_stamp(in_df,id_col, interval_col,pnum):
     """
     Get time stamp for processing HRV files.
 
@@ -195,6 +195,9 @@ def get_time_stamp(in_df,interval_col,pnum):
     ----------
     in_df:  pd Dataframe
         input dataframe
+    id_col: str
+        name of column containing
+        participant ids
     interval_col:   str
         name of column with desired interval
         eg "Film_start_interval"
@@ -205,7 +208,7 @@ def get_time_stamp(in_df,interval_col,pnum):
     -------
     time stamp (for input to get_hrv_interval())
     """
-    time_stamp = in_df[in_df.Participant_number==pnum].reset_index().at[0,interval_col]
+    time_stamp = in_df[in_df[id_col]==pnum].reset_index().at[0,interval_col]
     return time_stamp
 
 def get_hrv_interval(hrv_df,interval_start:float,interval_end:float):
