@@ -1,5 +1,6 @@
 import re
 from collections import Counter
+from datetime import datetime
 
 
 def get_participant_num(folder_name):
@@ -290,3 +291,23 @@ def check_double_tags(double_tag_df, num_tags):
         print("No participants found for this number of tags.")
     else:
         return double_view_df
+
+
+def get_only_time(in_df, time_cols:list[str]):
+    """
+    get time only from datetime cols.
+
+    Parameters
+    ----------
+    in_df:  pd Dataframe
+        input dataframe
+    time_cols:  list[str]
+        names of columns to convert
+    
+    Returns
+    -------
+    in_df with only time in time_cols
+    """
+    in_df = in_df.loc[:,time_cols].applymap(
+            lambda x: datetime.strptime(x,"%H:%M").time())
+    return in_df

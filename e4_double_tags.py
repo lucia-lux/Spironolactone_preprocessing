@@ -1,14 +1,30 @@
 import os
 import re
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from preprocess_modules import utilities_e4 as e4
+from preprocess_modules import utilities_hrv as hrvutils
+from preprocess_modules import utilities as dutils
 
 input_dir = r"P:\Spironolactone\E4"
-main_qualtrics_dir = r"P:\Spironolactone\main_qualtrics"
+main_dir = r"P:\Spironolactone\main_qualtrics"
 participant_folders = os.listdir(input_dir)
 participant_folders = [f for f in participant_folders if re.search("^p[0][0-9][0-9]",f.lower())] 
 
+# get relevant cols from the main qualtrics session file
+col_list =  ["Status","Finished","DQ-1","Firstbeat_on_time", "MUSIC-T1"]
+new_names = ["response_type","finished","participant_number","firstbeat_start","music_start"]
+qualtrics_df = pd.read_csv(os.path.join(main_dir,"main_dat.csv"),usecols =col_list,skiprows= [1,2])
+qualtrics_df.columns = new_names
+qualtrics_df = hrvutils.remove_invalid_records(qualtrics_df, "participant_number",[1])
+qualtrics_df = dutils.remove_incomplete_rows(qualtrics_df, "finished")
+qualtrics_df = qualtrics_df.drop(labels = ["response_type","finished"], axis = 1)
+# get time difference between qualtrics firstbeat on and music start time stamps
+qualtrics_df = hrvutils.convert_time_cols(qualtrics_df)
+qualtrics_df["time_delta"] = qualtrics_df["music_start"]- qualtrics_df["firstbeat_start"]
+
+# load tag file for each participant and construct tags dataframe
 missing_tags = []
 pnums = []
 tags_dat = []
@@ -60,7 +76,7 @@ double_df["Events"] = pd.Series([
 single_tags = e4.check_double_tags(double_df,1)
 print(double_df[double_df.Events.isin(["DT1_music_starts","DT2_music_starts"])])
 
-qualtrics_df = pd.read_csv(os.path.join(main_qualtrics_dir,"main_dat.csv"),skiprows = [1,2],usecols = ["DQ-1", "NOTES"])
+qualtrics_df = pd.read_csv(os.path.join(main_dir,"main_dat.csv"),skiprows = [1,2],usecols = ["DQ-1", "NOTES"])
 qualtrics_df.columns = ["pnum","session_notes"]
 qualtrics_df = qualtrics_df.drop(labels = qualtrics_df[qualtrics_df.session_notes.isna()].index, axis = 0)
 keywords = ["tag","e4"]
