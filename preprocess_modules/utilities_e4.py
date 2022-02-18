@@ -311,3 +311,14 @@ def get_only_time(in_df, time_cols:list[str]):
     in_df = in_df.loc[:,time_cols].applymap(
             lambda x: datetime.strptime(x,"%H:%M").time())
     return in_df
+
+def get_eda_intervals(eda_df, start_secs, end_secs, samp_rate):
+    """
+    Get eda data for specified
+    time interval
+    (eg Film, RT1, RT2,...)
+    """
+    start_ind = int(start_secs)*samp_rate
+    end_ind = int(end_secs)*samp_rate
+    eda_sec_df = eda_df.iloc[start_ind:end_ind]
+    return eda_sec_df
