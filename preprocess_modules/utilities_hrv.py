@@ -2,7 +2,7 @@ import datetime
 import warnings
 import pandas as pd
 
-def remove_invalid_records(in_df, exclude_pnums = None):
+def remove_invalid_records(in_df, id_col, exclude_pnums = None):
     """
     remove invalid records - participant id is nan or
     >100 (usually indicates test record)
@@ -11,6 +11,9 @@ def remove_invalid_records(in_df, exclude_pnums = None):
     ----------
     in_df:  pd DataFrame
         dataframe to operate on
+    id_col: str
+        name of column containing
+        participant ids
     exclude_pnums: list[int]
         specify participants who should be 
         excluded from the analysis, if any
@@ -19,15 +22,15 @@ def remove_invalid_records(in_df, exclude_pnums = None):
     -------
         dataframe w/o the above records
     """
-    in_df = in_df[(in_df.Participant_number.notna())
-                    &(in_df.Participant_number<100)]
+    in_df = in_df[(in_df[id_col].notna())
+                    &(in_df[id_col]<100)]
     if exclude_pnums:
         in_df = in_df.drop(labels = in_df[
-                in_df.Participant_number.isin(exclude_pnums)].index,
+                in_df[id_col].isin(exclude_pnums)].index,
                 axis = 0)
     return in_df
     
-def remove_duplicate_participants(in_df):
+def remove_duplicate_participants(in_df, id_col):
     """
     If we have duplicate records
     for a given participant, remove
@@ -36,24 +39,28 @@ def remove_duplicate_participants(in_df):
     Parameters
     ----------
     in_df:  pd Dataframe
+        dataframe to operate on
+    id_col: str
+        name of column containing
+        participant ids
 
     Returns
     -------
         in_df w/o all nan duplicates
     """
-    duplicated = in_df.loc[in_df.duplicated(subset = "Participant_number"),"Participant_number"]
+    duplicated = in_df.loc[in_df.duplicated(subset = id_col),id_col]
     if duplicated is None:
         return in_df
     else:
         drop_inds = []
         for dup in duplicated:
-            nan_sum = in_df[in_df.Participant_number == dup].isna().sum(axis = 1)
+            nan_sum = in_df[in_df[id_col] == dup].isna().sum(axis = 1)
             nan_max_ind = nan_sum[nan_sum == nan_sum.max()].index
             drop_inds.append(nan_max_ind[0])
         in_df = in_df.drop(labels = drop_inds, axis = 0)
         return in_df       
 
-def flag_duplicate_participants(in_df):
+def flag_duplicate_participants(in_df, id_col):
     """
     If we have duplicate records
     for a given participant, flag
@@ -62,15 +69,18 @@ def flag_duplicate_participants(in_df):
     Parameters
     ----------
     in_df:  pd Dataframe
+    id_col: str
+        name of column containing
+        participant ids
 
     Returns
     -------
         participant numbers for those
         with duplicate records
     """
-    duplicated = in_df.loc[in_df.duplicated(subset = "Participant_number"),"Participant_number"]
+    duplicated = in_df.loc[in_df.duplicated(subset = id_col),id_col]
     print(f"The following participants have duplicate records:\n{duplicated.values}")
-    return duplicated         
+    return duplicated       
 
 def convert_time_cols(in_df):
     """

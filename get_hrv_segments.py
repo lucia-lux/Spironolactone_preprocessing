@@ -22,9 +22,9 @@ new_names = ["response_type","Participant_number","Firstbeat_start","RT1_start",
 qualtrics_df = pd.read_csv(os.path.join(main_dir,"main_dat.csv"),usecols =col_list,skiprows= [1,2])
 qualtrics_df.columns = new_names
 
-qualtrics_df = utilities_hrv.remove_invalid_records(qualtrics_df,exclude_pnums = [1])
-duplicates = utilities_hrv.flag_duplicate_participants(qualtrics_df)
-qualtrics_df = utilities_hrv.remove_duplicate_participants(qualtrics_df)
+qualtrics_df = utilities_hrv.remove_invalid_records(qualtrics_df, "Participant_number",exclude_pnums = [1])
+duplicates = utilities_hrv.flag_duplicate_participants(qualtrics_df,"Participant_number")
+qualtrics_df = utilities_hrv.remove_duplicate_participants(qualtrics_df,"Participant_number")
 qualtrics_df = utilities_hrv.convert_time_cols(qualtrics_df)
 qualtrics_df = utilities_hrv.add_end_time(qualtrics_df,"Film_start",15)
 rt_time_cols = [f for f in qualtrics_df.columns if any(k in f for k in ["start","end"])]
