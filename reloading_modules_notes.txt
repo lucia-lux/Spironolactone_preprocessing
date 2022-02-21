@@ -4,6 +4,6 @@ If updating modules, do the following in the shell:
 import module_name
 import sys
 # delete
-delete(sys.modules["module_name"])
+del(sys.modules["module_name"])
 # reload so changes take effect
 import module_name
