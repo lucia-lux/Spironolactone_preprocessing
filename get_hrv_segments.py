@@ -1,5 +1,4 @@
 import os
-import datetime
 import pandas as pd
 import numpy as np
 import warnings
@@ -38,6 +37,12 @@ end_intervals = qualtrics_df.filter(like = "end_interval", axis = 1).columns.sor
 intervals = list(zip(start_intervals, end_intervals))
 
 # Track participants whose HRV data for any of the intervals is missing
+# Zip up start/end interval column names for easier access in for loop below:
+start_intervals = qualtrics_df.filter(like = "start_interval", axis = 1).columns.sort_values()
+end_intervals = qualtrics_df.filter(like = "end_interval", axis = 1).columns.sort_values()
+intervals = list(zip(start_intervals, end_intervals))
+
+# Track participants whose HRV data for any of the intervals is missing
 missing_pnums = []
 for pnum in qualtrics_df.participant_number:
     # check if file exists
@@ -56,12 +61,16 @@ for pnum in qualtrics_df.participant_number:
     # do this for all intervals (Film, RT1, RT2, RT3)
     for start_interval, end_interval in intervals:
         start_time = utilities_hrv.get_time_stamp(qualtrics_df,"participant_number", start_interval, pnum)
-        end_time = utilities_hrv.get_time_stamp(qualtrics_df,"participant_number", end_interval, pnum)
-        interval_df = utilities_hrv.get_hrv_interval(hrv_df,start_time,end_time)
+        end_time = utilities_hrv.get_time_stamp(qualtrics_df, "participant_number",end_interval, pnum)
+        try:
+            interval_df = utilities_hrv.get_hrv_interval(hrv_df,start_time,end_time)
+        except TypeError:
+            print(f"Start or end of interval for participant {pnum} is {start_time}. Indexing not possible. Skipping.")
+            continue
         # if the resulting dataframe is empty, flag this and hold on to pnum/interval
         if interval_df.empty:
             interval_name = start_interval.split("_")[0]
-            warnings.warn(f"{pnum} has no valid data for {interval_name} interval.\nManual check advised.")
+            print(f"Participant {pnum} has no valid data for {interval_name} interval.\nManual check advised. Skipping.")
             missing_pnums.append([pnum,interval_name])
             continue
         # save to file
