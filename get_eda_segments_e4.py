@@ -43,6 +43,7 @@ qualtrics_df = hrvutils.convert_to_secs(qualtrics_df)
 start_intervals = qualtrics_df.filter(like = "start_interval", axis = 1).columns.sort_values()
 end_intervals = qualtrics_df.filter(like = "end_interval", axis = 1).columns.sort_values()
 intervals = list(zip(start_intervals, end_intervals))
+qualtrics_pnums = qualtrics_df.Participant_number.values
 
 missing_eda = []
 pnums = []
@@ -54,9 +55,12 @@ duplicates = e4utils.flag_duplicates(participant_folders)
 # the formula for calculating min_session_length is: hours*minutes_per_hour*seconds_per_minute*sampling_rate
 min_session_length = 4*60*60*4
 
-# get eda files and cut into sections for rt1,rt2, film and rt3. save to output dir.
+
 for folder in participant_folders:
     pnum = e4utils.get_participant_num(folder)
+    if pnum not in qualtrics_pnums:
+        print(f" Participant {pnum} not in qualtrics file. Skipping.")
+        continue
     if pnum in duplicates:
         print(f"More than one file exists for participant {pnum}. Skipping.")
         continue
@@ -73,6 +77,11 @@ for folder in participant_folders:
     for start, stop in intervals:
         start_val = qualtrics_df.loc[qualtrics_df.Participant_number == pnum,start]
         stop_val = qualtrics_df.loc[qualtrics_df.Participant_number == pnum,stop]
+        try:
+            [int(val) for val in [start_val, stop_val]]
+        except (ValueError, TypeError) as e:
+            print(f"At least one of start_val, stop_val not int. Skipping participant {pnum}.")
+            continue
         interval_df = e4utils.get_eda_intervals(eda_df,start_val,stop_val,4)
         if interval_df.empty:
             interval_name = start.split("_")[0]
