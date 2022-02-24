@@ -2,7 +2,8 @@ import datetime
 import warnings
 import pandas as pd
 
-def remove_invalid_records(in_df, id_col, exclude_pnums = None):
+def remove_invalid_records(in_df, id_col, max_val = 100,
+    exclude_pnums = None):
     """
     remove invalid records - participant id is nan or
     >100 (usually indicates test record)
@@ -14,6 +15,9 @@ def remove_invalid_records(in_df, id_col, exclude_pnums = None):
     id_col: str
         name of column containing
         participant ids
+    max_val: int
+        max value for participant ID to be
+        valid
     exclude_pnums: list[int]
         specify participants who should be 
         excluded from the analysis, if any
@@ -23,7 +27,7 @@ def remove_invalid_records(in_df, id_col, exclude_pnums = None):
         dataframe w/o the above records
     """
     in_df = in_df[(in_df[id_col].notna())
-                    &(in_df[id_col]<100)]
+                    &(in_df[id_col]<max_val)]
     if exclude_pnums:
         in_df = in_df.drop(labels = in_df[
                 in_df[id_col].isin(exclude_pnums)].index,
