@@ -5,6 +5,7 @@ import warnings
 from preprocess_modules import utilities_hrv
 
 main_dir = r"P:\Spironolactone\main_qualtrics"
+main_filename = "main_dat21.csv"
 hrv_dir = r"P:\Spironolactone\Firstbeat"
 hrv_files = [file for file in os.listdir(hrv_dir) if file.lower().startswith('p') and file.endswith('.csv')]
 
@@ -18,7 +19,7 @@ except OSError:
 
 col_list =  ["Status","DQ-1","Firstbeat_on_time","baseline start","baseline end","Q645","Q646","FILM-START","Q648","Q649"]
 new_names = ["response_type","participant_number","Firstbeat_start","RT1_start","RT1_end","RT2_start","RT2_end","Film_start","RT3_start","RT3_end"]
-qualtrics_df = pd.read_csv(os.path.join(main_dir,"main_dat.csv"),usecols =col_list,skiprows= [1,2])
+qualtrics_df = pd.read_csv(os.path.join(main_dir,main_filename),usecols =col_list,skiprows= [1,2])
 qualtrics_df.columns = new_names
 
 qualtrics_df = utilities_hrv.remove_invalid_records(qualtrics_df, "participant_number",exclude_pnums = [1])

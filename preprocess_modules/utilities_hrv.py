@@ -2,8 +2,8 @@ import datetime
 import warnings
 import pandas as pd
 
-def remove_invalid_records(in_df, id_col, max_val = 100,
-    exclude_pnums = None):
+def remove_invalid_records(in_df, id_col,
+    exclude_pnums = None,max_val = 100):
     """
     remove invalid records - participant id is nan or
     >100 (usually indicates test record)

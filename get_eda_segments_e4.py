@@ -10,6 +10,7 @@ from preprocess_modules import utilities_e4 as e4utils
 # paths to input directories
 e4_dir = r"P:\Spironolactone\E4"
 main_dir = r"P:\Spironolactone\main_qualtrics"
+main_filename = "main_dat21.csv"
 participant_folders = os.listdir(e4_dir)
 # get relevant folders from E4 direcotries
 participant_folders = [f for f in participant_folders if re.search("^p[0][0-9][0-9]",f.lower())]
@@ -26,7 +27,7 @@ except OSError:
 # read in qualtrics file
 col_list =  ["Status","DQ-1","Firstbeat_on_time","baseline start","baseline end","Q645","Q646","FILM-START","Q648","Q649"]
 new_names = ["Response_type","Participant_number","Firstbeat_start","RT1_start","RT1_end","RT2_start","RT2_end","Film_start","RT3_start","RT3_end"]
-qualtrics_df = pd.read_csv(os.path.join(main_dir,"main_dat.csv"),usecols =col_list,skiprows= [1,2])
+qualtrics_df = pd.read_csv(os.path.join(main_dir,main_filename),usecols =col_list,skiprows= [1,2])
 qualtrics_df.columns = new_names
 
 # make interval cols
