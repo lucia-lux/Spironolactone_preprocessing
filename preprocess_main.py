@@ -14,7 +14,9 @@ try:
     os.makedirs(output_dir)
 except OSError:
     # if directory already exists
-    pass
+    print(
+        "Directory already exists. Files may be overwritten."
+        )
 
 # save to output dir?
 save = 1

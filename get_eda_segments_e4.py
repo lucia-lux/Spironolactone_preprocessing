@@ -18,11 +18,10 @@ participant_folders = [f for f in participant_folders if re.search("^p[0][0-9][0
 # make output directory
 output_dir = os.path.join(e4_dir,"processed_e4_files")
 try:
-    os.makedirs(output_dir)
+    os.mkdir(output_dir)
 except OSError:
     # if directory already exists
     warnings.warn("Directory already exists. Files may be overwritten. Manual check advised.")
-    pass
 
 # read in qualtrics file
 col_list =  ["Status","DQ-1","Firstbeat_on_time","baseline start","baseline end","Q645","Q646","FILM-START","Q648","Q649"]
