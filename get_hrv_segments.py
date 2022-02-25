@@ -15,7 +15,6 @@ try:
 except OSError:
     # if directory already exists
     warnings.warn("Directory already exists. Files may be overwritten. Manual check advised.")
-    pass
 
 col_list =  ["Status","DQ-1","Firstbeat_on_time","baseline start","baseline end","Q645","Q646","FILM-START","Q648","Q649"]
 new_names = ["response_type","participant_number","Firstbeat_start","RT1_start","RT1_end","RT2_start","RT2_end","Film_start","RT3_start","RT3_end"]
